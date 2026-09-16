@@ -100,8 +100,10 @@
   }
   .nav-links a:hover{color:var(--text);}
   .nav-actions{display:flex;align-items:center;gap:14px;}
-  .nav-signin{font-size:14.5px;font-weight:600;color:var(--text-dim);}
+  .nav-signin{font-size:14.5px;font-weight:600;color:var(--text-dim);background:none;border:none;cursor:pointer;font-family:inherit;}
   .nav-signin:hover{color:var(--text);}
+  .nav-user-menu{display:flex;align-items:center;gap:10px;}
+  .nav-user-email{font-size:13.5px;color:var(--text-dim);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
   .lang-switch{position:relative;}
   .lang-btn{
@@ -226,6 +228,13 @@
     color:var(--text-faint);
     line-height:1.5;
   }
+  .modal-status{
+    margin-top:14px;
+    font-size:13px;
+    line-height:1.5;
+  }
+  .modal-status.ok{color:#8fd6a8;}
+  .modal-status.err{color:#e0958f;}
 
   .btn{
     display:inline-flex;
@@ -630,6 +639,10 @@
           </div>
         </div>
         <a href="#" class="nav-signin js-signin" data-i18n="nav.anmelden">Anmelden</a>
+        <div id="navUserMenu" class="nav-user-menu" hidden>
+          <span id="navUserEmail" class="nav-user-email"></span>
+          <button type="button" id="navSignOut" class="nav-signin" data-i18n="nav.signout">Abmelden</button>
+        </div>
         <a href="#plans" class="btn btn-primary btn-sm" data-i18n="nav.download">Download</a>
       </div>
     </div>
@@ -854,18 +867,20 @@
       <div class="modal-divider" data-i18n="signin.or">oder</div>
       <form class="modal-email-form" id="signinEmailForm">
         <input type="email" class="modal-input" id="signinEmail" data-i18n-placeholder="signin.emailPlaceholder" placeholder="E-Mail-Adresse" required>
-        <button type="submit" class="btn btn-ghost" data-i18n="signin.emailCta">Mit E-Mail anmelden</button>
+        <button type="submit" class="btn btn-ghost" id="signinEmailBtn" data-i18n="signin.emailCta">Login-Link senden</button>
       </form>
-      <p class="modal-note" data-i18n="signin.note">Demo-Vorschau — hier ist keine echte Anmeldung hinterlegt.</p>
+      <p class="modal-note" id="signinNote" data-i18n="signin.note">Wir senden dir einen Login-Link per E-Mail — kein Passwort nötig.</p>
+      <p class="modal-status" id="signinStatus" hidden></p>
     </div>
   </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
   (function(){
     var translations = {
       de: {
         "nav.preise":"Preise", "nav.bewertungen":"Bewertungen", "nav.community":"Community",
-        "nav.anmelden":"Anmelden", "nav.download":"Download",
+        "nav.anmelden":"Anmelden", "nav.download":"Download", "nav.signout":"Abmelden",
         "hero.eyebrow":"KOSTENLOSER MINECRAFT CLIENT",
         "hero.sub":"Swift Client ist ein schlanker Minecraft-Client mit <b>niedrigerer Inputverzögerung</b> und einem <b>aufgeräumten HUD</b> — ganz ohne Bloat.",
         "hero.cta":"Für Windows herunterladen",
@@ -896,12 +911,14 @@
         "footer.rights":"© 2026 Swift Client. Alle Rechte vorbehalten.", "footer.notAffiliated":"Nicht verbunden mit Minecraft oder Mojang.",
         "signin.title":"Bei Swift anmelden", "signin.sub":"Melde dich mit Discord an, um dein Profil und deine Module zu synchronisieren.",
         "signin.discord":"Mit Discord anmelden", "signin.google":"Mit Google anmelden", "signin.or":"oder",
-        "signin.emailPlaceholder":"E-Mail-Adresse", "signin.emailCta":"Mit E-Mail anmelden",
-        "signin.note":"Demo-Vorschau — hier ist keine echte Anmeldung hinterlegt."
+        "signin.emailPlaceholder":"E-Mail-Adresse", "signin.emailCta":"Login-Link senden",
+        "signin.note":"Wir senden dir einen Login-Link per E-Mail — kein Passwort nötig.",
+        "signin.sending":"Wird gesendet…", "signin.emailSent":"Link gesendet! Prüfe dein Postfach (auch Spam-Ordner).",
+        "signin.emailError":"Das hat nicht geklappt. Bitte versuch es erneut.", "signin.oauthError":"Anmeldung fehlgeschlagen. Bitte versuch es erneut."
       },
       en: {
         "nav.preise":"Pricing", "nav.bewertungen":"Reviews", "nav.community":"Community",
-        "nav.anmelden":"Sign in", "nav.download":"Download",
+        "nav.anmelden":"Sign in", "nav.download":"Download", "nav.signout":"Sign out",
         "hero.eyebrow":"FREE MINECRAFT CLIENT",
         "hero.sub":"Swift Client is a lightweight Minecraft client with <b>lower input delay</b> and a <b>clean HUD</b> — with zero bloat.",
         "hero.cta":"Download for Windows",
@@ -932,12 +949,14 @@
         "footer.rights":"© 2026 Swift Client. All rights reserved.", "footer.notAffiliated":"Not affiliated with Minecraft or Mojang.",
         "signin.title":"Sign in to Swift", "signin.sub":"Sign in with Discord to sync your profile and modules.",
         "signin.discord":"Sign in with Discord", "signin.google":"Sign in with Google", "signin.or":"or",
-        "signin.emailPlaceholder":"Email address", "signin.emailCta":"Continue with email",
-        "signin.note":"Demo preview — no real sign-in is connected here."
+        "signin.emailPlaceholder":"Email address", "signin.emailCta":"Send login link",
+        "signin.note":"We'll email you a login link — no password needed.",
+        "signin.sending":"Sending…", "signin.emailSent":"Link sent! Check your inbox (and spam folder).",
+        "signin.emailError":"Something went wrong. Please try again.", "signin.oauthError":"Sign-in failed. Please try again."
       },
       es: {
         "nav.preise":"Precios", "nav.bewertungen":"Opiniones", "nav.community":"Comunidad",
-        "nav.anmelden":"Iniciar sesión", "nav.download":"Descargar",
+        "nav.anmelden":"Iniciar sesión", "nav.download":"Descargar", "nav.signout":"Cerrar sesión",
         "hero.eyebrow":"CLIENTE GRATUITO DE MINECRAFT",
         "hero.sub":"Swift Client es un cliente de Minecraft ligero con <b>menor retardo de entrada</b> y un <b>HUD limpio</b> — sin nada de más.",
         "hero.cta":"Descargar para Windows",
@@ -968,12 +987,14 @@
         "footer.rights":"© 2026 Swift Client. Todos los derechos reservados.", "footer.notAffiliated":"No afiliado con Minecraft ni Mojang.",
         "signin.title":"Iniciar sesión en Swift", "signin.sub":"Inicia sesión con Discord para sincronizar tu perfil y tus módulos.",
         "signin.discord":"Iniciar sesión con Discord", "signin.google":"Iniciar sesión con Google", "signin.or":"o",
-        "signin.emailPlaceholder":"Correo electrónico", "signin.emailCta":"Continuar con correo",
-        "signin.note":"Vista previa de demostración — aquí no hay ninguna autenticación real conectada."
+        "signin.emailPlaceholder":"Correo electrónico", "signin.emailCta":"Enviar enlace de acceso",
+        "signin.note":"Te enviaremos un enlace de acceso por correo — sin contraseña.",
+        "signin.sending":"Enviando…", "signin.emailSent":"¡Enlace enviado! Revisa tu bandeja de entrada (y spam).",
+        "signin.emailError":"Algo salió mal. Inténtalo de nuevo.", "signin.oauthError":"Error al iniciar sesión. Inténtalo de nuevo."
       },
       fr: {
         "nav.preise":"Tarifs", "nav.bewertungen":"Avis", "nav.community":"Communauté",
-        "nav.anmelden":"Connexion", "nav.download":"Télécharger",
+        "nav.anmelden":"Connexion", "nav.download":"Télécharger", "nav.signout":"Déconnexion",
         "hero.eyebrow":"CLIENT MINECRAFT GRATUIT",
         "hero.sub":"Swift Client est un client Minecraft léger avec un <b>délai d'entrée réduit</b> et un <b>HUD épuré</b> — sans superflu.",
         "hero.cta":"Télécharger pour Windows",
@@ -1004,8 +1025,10 @@
         "footer.rights":"© 2026 Swift Client. Tous droits réservés.", "footer.notAffiliated":"Non affilié à Minecraft ou Mojang.",
         "signin.title":"Se connecter à Swift", "signin.sub":"Connectez-vous avec Discord pour synchroniser votre profil et vos modules.",
         "signin.discord":"Se connecter avec Discord", "signin.google":"Se connecter avec Google", "signin.or":"ou",
-        "signin.emailPlaceholder":"Adresse e-mail", "signin.emailCta":"Continuer avec l'e-mail",
-        "signin.note":"Aperçu de démonstration — aucune connexion réelle n'est branchée ici."
+        "signin.emailPlaceholder":"Adresse e-mail", "signin.emailCta":"Envoyer le lien de connexion",
+        "signin.note":"Nous vous enverrons un lien de connexion par e-mail — pas de mot de passe.",
+        "signin.sending":"Envoi…", "signin.emailSent":"Lien envoyé ! Vérifiez votre boîte de réception (et vos spams).",
+        "signin.emailError":"Une erreur s'est produite. Réessayez.", "signin.oauthError":"Échec de la connexion. Réessayez."
       }
     };
 
@@ -1048,6 +1071,8 @@
       });
     }
 
+    window.__swiftTranslations = translations;
+
     var saved = 'de';
     try{ saved = localStorage.getItem('swift-lang') || 'de'; }catch(e){}
     if(!translations[saved]) saved = 'de';
@@ -1067,15 +1092,52 @@
   });
 
   (function(){
+    var SUPABASE_URL = 'https://uarongskqlfkjqkxlvld.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_UXsraKrs0qVJeNlqV_Oslw_QqhdJ-8C';
+    var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     var overlay = document.getElementById('signinOverlay');
     var closeBtn = document.getElementById('signinClose');
     var discordBtn = document.getElementById('signinDiscordBtn');
     var googleBtn = document.getElementById('signinGoogleBtn');
     var emailForm = document.getElementById('signinEmailForm');
+    var emailInput = document.getElementById('signinEmail');
+    var emailBtn = document.getElementById('signinEmailBtn');
+    var statusEl = document.getElementById('signinStatus');
+    var navSignin = document.querySelector('.nav-signin.js-signin');
+    var navUserMenu = document.getElementById('navUserMenu');
+    var navUserEmail = document.getElementById('navUserEmail');
+    var navSignOut = document.getElementById('navSignOut');
     if(!overlay) return;
 
-    function openSignin(){ overlay.classList.add('open'); }
+    function openSignin(){
+      statusEl.hidden = true;
+      statusEl.className = 'modal-status';
+      overlay.classList.add('open');
+    }
     function closeSignin(){ overlay.classList.remove('open'); }
+    function showStatus(text, kind){
+      statusEl.textContent = text;
+      statusEl.className = 'modal-status ' + kind;
+      statusEl.hidden = false;
+    }
+    function currentLang(){ return document.documentElement.lang || 'de'; }
+    function t(key){
+      var dict = (window.__swiftTranslations || {})[currentLang()] || {};
+      return dict[key] || key;
+    }
+
+    function renderSession(session){
+      if(session && session.user){
+        navSignin.hidden = true;
+        navUserMenu.hidden = false;
+        navUserEmail.textContent = session.user.email || session.user.user_metadata?.user_name || session.user.user_metadata?.full_name || '';
+      } else {
+        navSignin.hidden = false;
+        navUserMenu.hidden = true;
+        navUserEmail.textContent = '';
+      }
+    }
 
     document.querySelectorAll('.js-signin').forEach(function(el){
       el.addEventListener('click', function(e){
@@ -1089,19 +1151,39 @@
     });
     discordBtn.addEventListener('click', function(e){
       e.preventDefault();
-      closeSignin();
+      sb.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.href } });
     });
     googleBtn.addEventListener('click', function(e){
       e.preventDefault();
-      closeSignin();
+      sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
     });
     emailForm.addEventListener('submit', function(e){
       e.preventDefault();
-      closeSignin();
+      var email = emailInput.value.trim();
+      if(!email) return;
+      emailBtn.disabled = true;
+      var sendingText = t('signin.sending');
+      emailBtn.textContent = sendingText;
+      sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.href } }).then(function(res){
+        emailBtn.disabled = false;
+        emailBtn.textContent = t('signin.emailCta');
+        if(res.error){
+          showStatus(t('signin.emailError'), 'err');
+        } else {
+          showStatus(t('signin.emailSent'), 'ok');
+          emailForm.reset();
+        }
+      });
+    });
+    navSignOut.addEventListener('click', function(){
+      sb.auth.signOut();
     });
     document.addEventListener('keydown', function(e){
       if(e.key === 'Escape') closeSignin();
     });
+
+    sb.auth.onAuthStateChange(function(_event, session){ renderSession(session); });
+    sb.auth.getSession().then(function(res){ renderSession(res.data.session); });
   })();
 </script>
 </body>
