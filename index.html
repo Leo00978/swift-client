@@ -1320,6 +1320,7 @@
     var SUPABASE_URL = 'https://uarongskqlfkjqkxlvld.supabase.co';
     var SUPABASE_KEY = 'sb_publishable_UXsraKrs0qVJeNlqV_Oslw_QqhdJ-8C';
     var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    var redirectUrl = window.location.origin + window.location.pathname;
 
     var overlay = document.getElementById('signinOverlay');
     var closeBtn = document.getElementById('signinClose');
@@ -1401,11 +1402,11 @@
     });
     discordBtn.addEventListener('click', function(e){
       e.preventDefault();
-      sb.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: window.location.href } });
+      sb.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: redirectUrl } });
     });
     googleBtn.addEventListener('click', function(e){
       e.preventDefault();
-      sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+      sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectUrl } });
     });
     emailForm.addEventListener('submit', function(e){
       e.preventDefault();
@@ -1414,7 +1415,7 @@
       emailBtn.disabled = true;
       var sendingText = t('signin.sending');
       emailBtn.textContent = sendingText;
-      sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: window.location.href } }).then(function(res){
+      sb.auth.signInWithOtp({ email: email, options: { emailRedirectTo: redirectUrl } }).then(function(res){
         emailBtn.disabled = false;
         emailBtn.textContent = t('signin.emailCta');
         if(res.error){
