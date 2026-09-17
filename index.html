@@ -238,6 +238,14 @@
   }
   .modal-status.ok{color:#8fd6a8;}
   .modal-status.err{color:#e0958f;}
+  .modal-already-name{
+    margin-top:2px;
+    font-size:16px;
+    font-weight:700;
+    color:var(--text);
+  }
+  #signinAlready .modal-sub{margin-top:0;}
+  #signinAlready #signinModalSignOut{margin-top:22px;}
 
   .btn{
     display:inline-flex;
@@ -860,22 +868,29 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="signinTitle">
       <button type="button" class="modal-close" id="signinClose" aria-label="Schließen">✕</button>
       <h3 id="signinTitle" data-i18n="signin.title">Bei Swift anmelden</h3>
-      <p class="modal-sub" data-i18n="signin.sub">Melde dich mit Discord an, um dein Profil und deine Module zu synchronisieren.</p>
-      <a href="#" class="btn btn-primary modal-discord-btn" id="signinDiscordBtn">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.4c-1.3-.6-2.6-1-4-1.3-.2.3-.4.7-.5 1-1.5-.2-3-.2-4.5 0-.1-.3-.3-.7-.5-1-1.4.2-2.7.7-4 1.3C4.3 9.1 3.7 12.7 4 16.3c1.6 1.2 3.2 1.9 4.7 2.4.4-.5.7-1.1 1-1.7-.6-.2-1.1-.5-1.6-.8.1-.1.3-.2.4-.3 3 1.4 6.3 1.4 9.3 0 .1.1.3.2.4.3-.5.3-1 .6-1.6.8.3.6.6 1.2 1 1.7 1.5-.5 3.1-1.2 4.7-2.4.4-4.2-.7-7.7-1.9-10.9ZM9.7 14.3c-.9 0-1.6-.8-1.6-1.8s.7-1.8 1.6-1.8 1.6.8 1.6 1.8-.7 1.8-1.6 1.8Zm5.6 0c-.9 0-1.6-.8-1.6-1.8s.7-1.8 1.6-1.8 1.6.8 1.6 1.8-.7 1.8-1.6 1.8Z"/></svg>
-        <span data-i18n="signin.discord">Mit Discord anmelden</span>
-      </a>
-      <a href="#" class="btn btn-ghost modal-google-btn" id="signinGoogleBtn">
-        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.3 2.7l6-6C33.5 6.5 29 4.5 24 4.5 12.9 4.5 4 13.4 4 24.5S12.9 44.5 24 44.5 44 35.6 44 24.5c0-1.4-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c2.8 0 5.3 1 7.3 2.7l6-6C33.5 6.5 29 4.5 24 4.5c-7.7 0-14.3 4.3-17.7 10.2z"/><path fill="#4CAF50" d="M24 44.5c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.1 35.7 26.7 36.5 24 36.5c-5.3 0-9.7-3.4-11.3-8.2l-6.6 5.1C9.5 40.1 16.1 44.5 24 44.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.2 5.2C39.9 37 44 31.5 44 24.5c0-1.4-.1-2.7-.4-4z"/></svg>
-        <span data-i18n="signin.google">Mit Google anmelden</span>
-      </a>
-      <div class="modal-divider" data-i18n="signin.or">oder</div>
-      <form class="modal-email-form" id="signinEmailForm">
-        <input type="email" class="modal-input" id="signinEmail" data-i18n-placeholder="signin.emailPlaceholder" placeholder="E-Mail-Adresse" required>
-        <button type="submit" class="btn btn-ghost" id="signinEmailBtn" data-i18n="signin.emailCta">Login-Link senden</button>
-      </form>
-      <p class="modal-note" id="signinNote" data-i18n="signin.note">Wir senden dir einen Login-Link per E-Mail — kein Passwort nötig.</p>
-      <p class="modal-status" id="signinStatus" hidden></p>
+      <div id="signinOptions">
+        <p class="modal-sub" data-i18n="signin.sub">Melde dich mit Discord an, um dein Profil und deine Module zu synchronisieren.</p>
+        <a href="#" class="btn btn-primary modal-discord-btn" id="signinDiscordBtn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.4c-1.3-.6-2.6-1-4-1.3-.2.3-.4.7-.5 1-1.5-.2-3-.2-4.5 0-.1-.3-.3-.7-.5-1-1.4.2-2.7.7-4 1.3C4.3 9.1 3.7 12.7 4 16.3c1.6 1.2 3.2 1.9 4.7 2.4.4-.5.7-1.1 1-1.7-.6-.2-1.1-.5-1.6-.8.1-.1.3-.2.4-.3 3 1.4 6.3 1.4 9.3 0 .1.1.3.2.4.3-.5.3-1 .6-1.6.8.3.6.6 1.2 1 1.7 1.5-.5 3.1-1.2 4.7-2.4.4-4.2-.7-7.7-1.9-10.9ZM9.7 14.3c-.9 0-1.6-.8-1.6-1.8s.7-1.8 1.6-1.8 1.6.8 1.6 1.8-.7 1.8-1.6 1.8Zm5.6 0c-.9 0-1.6-.8-1.6-1.8s.7-1.8 1.6-1.8 1.6.8 1.6 1.8-.7 1.8-1.6 1.8Z"/></svg>
+          <span data-i18n="signin.discord">Mit Discord anmelden</span>
+        </a>
+        <a href="#" class="btn btn-ghost modal-google-btn" id="signinGoogleBtn">
+          <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.3 2.7l6-6C33.5 6.5 29 4.5 24 4.5 12.9 4.5 4 13.4 4 24.5S12.9 44.5 24 44.5 44 35.6 44 24.5c0-1.4-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c2.8 0 5.3 1 7.3 2.7l6-6C33.5 6.5 29 4.5 24 4.5c-7.7 0-14.3 4.3-17.7 10.2z"/><path fill="#4CAF50" d="M24 44.5c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.1 35.7 26.7 36.5 24 36.5c-5.3 0-9.7-3.4-11.3-8.2l-6.6 5.1C9.5 40.1 16.1 44.5 24 44.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.2 5.2C39.9 37 44 31.5 44 24.5c0-1.4-.1-2.7-.4-4z"/></svg>
+          <span data-i18n="signin.google">Mit Google anmelden</span>
+        </a>
+        <div class="modal-divider" data-i18n="signin.or">oder</div>
+        <form class="modal-email-form" id="signinEmailForm">
+          <input type="email" class="modal-input" id="signinEmail" data-i18n-placeholder="signin.emailPlaceholder" placeholder="E-Mail-Adresse" required>
+          <button type="submit" class="btn btn-ghost" id="signinEmailBtn" data-i18n="signin.emailCta">Login-Link senden</button>
+        </form>
+        <p class="modal-note" id="signinNote" data-i18n="signin.note">Wir senden dir einen Login-Link per E-Mail — kein Passwort nötig.</p>
+        <p class="modal-status" id="signinStatus" hidden></p>
+      </div>
+      <div id="signinAlready" hidden>
+        <p class="modal-sub" data-i18n="signin.alreadyText">Du bist bereits angemeldet als</p>
+        <p class="modal-already-name" id="signinAlreadyName"></p>
+        <button type="button" class="btn btn-ghost modal-discord-btn" id="signinModalSignOut" data-i18n="nav.signout">Abmelden</button>
+      </div>
     </div>
   </div>
 
@@ -915,6 +930,7 @@
         "footer.rechtliches":"Rechtliches", "footer.datenschutz":"Datenschutz", "footer.agb":"AGB", "footer.impressum":"Impressum",
         "footer.rights":"© 2026 Swift Client. Alle Rechte vorbehalten.", "footer.notAffiliated":"Nicht verbunden mit Minecraft oder Mojang.",
         "signin.title":"Bei Swift anmelden", "signin.sub":"Melde dich mit Discord an, um dein Profil und deine Module zu synchronisieren.",
+        "signin.alreadyTitle":"Bereits angemeldet", "signin.alreadyText":"Du bist bereits angemeldet als",
         "signin.discord":"Mit Discord anmelden", "signin.google":"Mit Google anmelden", "signin.or":"oder",
         "signin.emailPlaceholder":"E-Mail-Adresse", "signin.emailCta":"Login-Link senden",
         "signin.note":"Wir senden dir einen Login-Link per E-Mail — kein Passwort nötig.",
@@ -953,6 +969,7 @@
         "footer.rechtliches":"Legal", "footer.datenschutz":"Privacy Policy", "footer.agb":"Terms of Service", "footer.impressum":"Imprint",
         "footer.rights":"© 2026 Swift Client. All rights reserved.", "footer.notAffiliated":"Not affiliated with Minecraft or Mojang.",
         "signin.title":"Sign in to Swift", "signin.sub":"Sign in with Discord to sync your profile and modules.",
+        "signin.alreadyTitle":"Already signed in", "signin.alreadyText":"You're already signed in as",
         "signin.discord":"Sign in with Discord", "signin.google":"Sign in with Google", "signin.or":"or",
         "signin.emailPlaceholder":"Email address", "signin.emailCta":"Send login link",
         "signin.note":"We'll email you a login link — no password needed.",
@@ -991,6 +1008,7 @@
         "footer.rechtliches":"Legal", "footer.datenschutz":"Privacidad", "footer.agb":"Términos de servicio", "footer.impressum":"Aviso legal",
         "footer.rights":"© 2026 Swift Client. Todos los derechos reservados.", "footer.notAffiliated":"No afiliado con Minecraft ni Mojang.",
         "signin.title":"Iniciar sesión en Swift", "signin.sub":"Inicia sesión con Discord para sincronizar tu perfil y tus módulos.",
+        "signin.alreadyTitle":"Ya has iniciado sesión", "signin.alreadyText":"Ya has iniciado sesión como",
         "signin.discord":"Iniciar sesión con Discord", "signin.google":"Iniciar sesión con Google", "signin.or":"o",
         "signin.emailPlaceholder":"Correo electrónico", "signin.emailCta":"Enviar enlace de acceso",
         "signin.note":"Te enviaremos un enlace de acceso por correo — sin contraseña.",
@@ -1029,6 +1047,7 @@
         "footer.rechtliches":"Informations légales", "footer.datenschutz":"Confidentialité", "footer.agb":"Conditions d'utilisation", "footer.impressum":"Mentions légales",
         "footer.rights":"© 2026 Swift Client. Tous droits réservés.", "footer.notAffiliated":"Non affilié à Minecraft ou Mojang.",
         "signin.title":"Se connecter à Swift", "signin.sub":"Connectez-vous avec Discord pour synchroniser votre profil et vos modules.",
+        "signin.alreadyTitle":"Déjà connecté", "signin.alreadyText":"Vous êtes déjà connecté en tant que",
         "signin.discord":"Se connecter avec Discord", "signin.google":"Se connecter avec Google", "signin.or":"ou",
         "signin.emailPlaceholder":"Adresse e-mail", "signin.emailCta":"Envoyer le lien de connexion",
         "signin.note":"Nous vous enverrons un lien de connexion par e-mail — pas de mot de passe.",
@@ -1067,6 +1086,7 @@
         "footer.rechtliches":"Legale", "footer.datenschutz":"Privacy", "footer.agb":"Termini di servizio", "footer.impressum":"Note legali",
         "footer.rights":"© 2026 Swift Client. Tutti i diritti riservati.", "footer.notAffiliated":"Non affiliato a Minecraft o Mojang.",
         "signin.title":"Accedi a Swift", "signin.sub":"Accedi con Discord per sincronizzare il tuo profilo e i tuoi moduli.",
+        "signin.alreadyTitle":"Accesso già effettuato", "signin.alreadyText":"Hai già effettuato l'accesso come",
         "signin.discord":"Accedi con Discord", "signin.google":"Accedi con Google", "signin.or":"oppure",
         "signin.emailPlaceholder":"Indirizzo email", "signin.emailCta":"Invia link di accesso",
         "signin.note":"Ti invieremo un link di accesso via email — nessuna password necessaria.",
@@ -1105,6 +1125,7 @@
         "footer.rechtliches":"Legal", "footer.datenschutz":"Privacidade", "footer.agb":"Termos de serviço", "footer.impressum":"Aviso legal",
         "footer.rights":"© 2026 Swift Client. Todos os direitos reservados.", "footer.notAffiliated":"Não afiliado à Minecraft ou à Mojang.",
         "signin.title":"Entrar no Swift", "signin.sub":"Entre com o Discord para sincronizar seu perfil e seus módulos.",
+        "signin.alreadyTitle":"Você já está conectado", "signin.alreadyText":"Você já está conectado como",
         "signin.discord":"Entrar com Discord", "signin.google":"Entrar com Google", "signin.or":"ou",
         "signin.emailPlaceholder":"Endereço de e-mail", "signin.emailCta":"Enviar link de acesso",
         "signin.note":"Vamos te enviar um link de acesso por e-mail — sem senha necessária.",
@@ -1143,6 +1164,7 @@
         "footer.rechtliches":"Informacje prawne", "footer.datenschutz":"Prywatność", "footer.agb":"Warunki korzystania", "footer.impressum":"Nota prawna",
         "footer.rights":"© 2026 Swift Client. Wszelkie prawa zastrzeżone.", "footer.notAffiliated":"Niepowiązane z Minecraft ani Mojang.",
         "signin.title":"Zaloguj się do Swift", "signin.sub":"Zaloguj się przez Discord, aby zsynchronizować profil i moduły.",
+        "signin.alreadyTitle":"Jesteś już zalogowany", "signin.alreadyText":"Jesteś już zalogowany jako",
         "signin.discord":"Zaloguj się przez Discord", "signin.google":"Zaloguj się przez Google", "signin.or":"lub",
         "signin.emailPlaceholder":"Adres e-mail", "signin.emailCta":"Wyślij link logowania",
         "signin.note":"Wyślemy Ci link do logowania na e-mail — hasło nie jest potrzebne.",
@@ -1181,6 +1203,7 @@
         "footer.rechtliches":"Yasal", "footer.datenschutz":"Gizlilik", "footer.agb":"Kullanım Şartları", "footer.impressum":"Yasal Bildirim",
         "footer.rights":"© 2026 Swift Client. Tüm hakları saklıdır.", "footer.notAffiliated":"Minecraft veya Mojang ile bağlantılı değildir.",
         "signin.title":"Swift'e giriş yap", "signin.sub":"Profilini ve modüllerini senkronize etmek için Discord ile giriş yap.",
+        "signin.alreadyTitle":"Zaten giriş yaptın", "signin.alreadyText":"Zaten şu kullanıcı olarak giriş yaptın:",
         "signin.discord":"Discord ile giriş yap", "signin.google":"Google ile giriş yap", "signin.or":"veya",
         "signin.emailPlaceholder":"E-posta adresi", "signin.emailCta":"Giriş bağlantısı gönder",
         "signin.note":"Sana e-posta ile bir giriş bağlantısı göndereceğiz — şifre gerekmez.",
@@ -1219,6 +1242,7 @@
         "footer.rechtliches":"Правовая информация", "footer.datenschutz":"Конфиденциальность", "footer.agb":"Условия использования", "footer.impressum":"Юридическая информация",
         "footer.rights":"© 2026 Swift Client. Все права защищены.", "footer.notAffiliated":"Не связано с Minecraft или Mojang.",
         "signin.title":"Вход в Swift", "signin.sub":"Войди через Discord, чтобы синхронизировать профиль и модули.",
+        "signin.alreadyTitle":"Вы уже вошли", "signin.alreadyText":"Вы уже вошли как",
         "signin.discord":"Войти через Discord", "signin.google":"Войти через Google", "signin.or":"или",
         "signin.emailPlaceholder":"Адрес электронной почты", "signin.emailCta":"Отправить ссылку для входа",
         "signin.note":"Мы отправим тебе ссылку для входа по почте — пароль не нужен.",
@@ -1303,11 +1327,35 @@
     var navUserMenu = document.getElementById('navUserMenu');
     var navUserEmail = document.getElementById('navUserEmail');
     var navSignOut = document.getElementById('navSignOut');
+    var signinOptions = document.getElementById('signinOptions');
+    var signinAlready = document.getElementById('signinAlready');
+    var signinAlreadyName = document.getElementById('signinAlreadyName');
+    var signinModalSignOut = document.getElementById('signinModalSignOut');
+    var signinTitle = document.getElementById('signinTitle');
     if(!overlay) return;
+
+    var currentSession = null;
+
+    function currentLang(){ return document.documentElement.lang || 'de'; }
+    function t(key){
+      var dict = (window.__swiftTranslations || {})[currentLang()] || {};
+      return dict[key] || key;
+    }
 
     function openSignin(){
       statusEl.hidden = true;
       statusEl.className = 'modal-status';
+      if(currentSession && currentSession.user){
+        signinOptions.hidden = true;
+        signinAlready.hidden = false;
+        signinTitle.textContent = t('signin.alreadyTitle');
+        var meta = currentSession.user.user_metadata || {};
+        signinAlreadyName.textContent = meta.user_name || meta.preferred_username || meta.full_name || meta.name || currentSession.user.email || '';
+      } else {
+        signinOptions.hidden = false;
+        signinAlready.hidden = true;
+        signinTitle.textContent = t('signin.title');
+      }
       overlay.classList.add('open');
     }
     function closeSignin(){ overlay.classList.remove('open'); }
@@ -1316,13 +1364,9 @@
       statusEl.className = 'modal-status ' + kind;
       statusEl.hidden = false;
     }
-    function currentLang(){ return document.documentElement.lang || 'de'; }
-    function t(key){
-      var dict = (window.__swiftTranslations || {})[currentLang()] || {};
-      return dict[key] || key;
-    }
 
     function renderSession(session){
+      currentSession = session;
       if(session && session.user){
         navSignin.hidden = true;
         navUserMenu.hidden = false;
@@ -1342,6 +1386,10 @@
       });
     });
     closeBtn.addEventListener('click', closeSignin);
+    signinModalSignOut.addEventListener('click', function(){
+      sb.auth.signOut();
+      closeSignin();
+    });
     overlay.addEventListener('click', function(e){
       if(e.target === overlay) closeSignin();
     });
