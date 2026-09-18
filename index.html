@@ -1491,6 +1491,7 @@
     if(!overlay) return;
 
     var ADMIN_EMAIL = 'l.kunzmann@mail.de';
+    var ADMIN_USER_IDS = ['ebd388f0-4945-4abf-b4e4-9e0fa34bf338'];
     var siteContent = document.getElementById('siteContent');
     var gateLoading = document.getElementById('gateLoading');
     var gateLoggedOut = document.getElementById('gateLoggedOut');
@@ -1619,7 +1620,7 @@
         return;
       }
       var email = (session.user.email || '').toLowerCase();
-      var isAdmin = email === ADMIN_EMAIL;
+      var isAdmin = email === ADMIN_EMAIL || ADMIN_USER_IDS.indexOf(session.user.id) !== -1;
       var meta = session.user.user_metadata || {};
       var displayName = meta.user_name || meta.preferred_username || meta.full_name || meta.name || '';
       var provider = (session.user.app_metadata && session.user.app_metadata.provider) || '';
