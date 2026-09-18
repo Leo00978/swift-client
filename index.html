@@ -627,10 +627,131 @@
     .cta-banner{padding:36px 24px;flex-direction:column;align-items:flex-start;}
     .footer-top{grid-template-columns:1fr;}
   }
+
+  /* Access gate */
+  .gate-screen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    padding:24px;
+    text-align:center;
+    background:var(--bg);
+    z-index:200;
+  }
+  .gate-screen[hidden]{display:none;}
+  .gate-logo-wordmark{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:26px;
+    letter-spacing:0.04em;
+    color:var(--text);
+  }
+  .gate-title{font-size:26px;}
+  .gate-text{color:var(--text-dim);max-width:42ch;font-size:15px;}
+  .gate-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+
+  /* Admin panel */
+  .admin-panel{
+    position:fixed;
+    top:88px;
+    right:20px;
+    width:320px;
+    max-height:70vh;
+    overflow-y:auto;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
+    z-index:150;
+    padding:14px;
+  }
+  .admin-panel-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:13px;
+    margin-bottom:10px;
+    color:var(--text);
+  }
+  .admin-panel-refresh{
+    background:none;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    border-radius:6px;
+    width:24px;
+    height:24px;
+    cursor:pointer;
+  }
+  .admin-request{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    padding:10px;
+    border:1px solid var(--border-soft);
+    border-radius:10px;
+    margin-bottom:8px;
+    font-size:12.5px;
+    color:var(--text-dim);
+  }
+  .admin-request-status{font-size:11px;color:var(--text-faint);}
+  .admin-request-actions{display:flex;gap:8px;}
+  .admin-request-actions button{
+    flex:1;
+    padding:6px 10px;
+    font-size:11.5px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:700;
+  }
+  .admin-approve{background:rgba(143,214,168,0.12);color:#8fd6a8;}
+  .admin-deny{background:rgba(224,149,143,0.12);color:#e0958f;}
+  .admin-empty{color:var(--text-faint);font-size:12.5px;}
 </style>
 </head>
 <body>
 
+  <div id="gateLoading" class="gate-screen">
+    <div class="gate-logo-wordmark">SWIFT</div>
+  </div>
+
+  <div id="gateLoggedOut" class="gate-screen" hidden>
+    <div class="gate-logo-wordmark">SWIFT</div>
+    <p class="gate-text" data-i18n="gate.loggedOutText">Diese Seite ist aktuell nur für freigegebene Nutzer sichtbar. Melde dich an, um Zugriff zu beantragen.</p>
+    <button type="button" class="btn btn-primary js-signin" data-i18n="nav.anmelden">Anmelden</button>
+  </div>
+
+  <div id="gatePending" class="gate-screen" hidden>
+    <div class="gate-logo-wordmark">SWIFT</div>
+    <h1 class="gate-title" data-i18n="gate.pendingTitle">Warte auf Freigabe</h1>
+    <p class="gate-text" data-i18n="gate.pendingText">Deine Anfrage wurde gesendet. Du bekommst Zugriff, sobald sie bestätigt wurde.</p>
+    <div class="gate-actions">
+      <button type="button" class="btn btn-ghost" id="gateRefreshPending" data-i18n="gate.refresh">Aktualisieren</button>
+      <button type="button" class="btn btn-ghost" id="gateSignOutPending" data-i18n="nav.signout">Abmelden</button>
+    </div>
+  </div>
+
+  <div id="gateDenied" class="gate-screen" hidden>
+    <div class="gate-logo-wordmark">SWIFT</div>
+    <h1 class="gate-title" data-i18n="gate.deniedTitle">Kein Zugriff</h1>
+    <p class="gate-text" data-i18n="gate.deniedText">Deine Anfrage wurde leider abgelehnt.</p>
+    <button type="button" class="btn btn-ghost" id="gateSignOutDenied" data-i18n="nav.signout">Abmelden</button>
+  </div>
+
+  <div id="adminPanel" class="admin-panel" hidden>
+    <div class="admin-panel-header">
+      <strong>Zugriffsanfragen</strong>
+      <button type="button" id="adminPanelRefresh" class="admin-panel-refresh" aria-label="Aktualisieren">↻</button>
+    </div>
+    <div id="adminPanelList"></div>
+  </div>
+
+  <div id="siteContent" hidden>
   <nav>
     <div class="nav-inner">
       <a href="#top" class="logo">
@@ -869,6 +990,7 @@
       </div>
     </div>
   </footer>
+  </div>
 
   <div class="modal-overlay" id="signinOverlay">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="signinTitle">
@@ -907,6 +1029,9 @@
       de: {
         "nav.preise":"Preise", "nav.bewertungen":"Bewertungen", "nav.community":"Community",
         "nav.anmelden":"Anmelden", "nav.download":"Download", "nav.signout":"Abmelden",
+        "gate.loggedOutText":"Diese Seite ist aktuell nur für freigegebene Nutzer sichtbar. Melde dich an, um Zugriff zu beantragen.",
+        "gate.pendingTitle":"Warte auf Freigabe", "gate.pendingText":"Deine Anfrage wurde gesendet. Du bekommst Zugriff, sobald sie bestätigt wurde.",
+        "gate.deniedTitle":"Kein Zugriff", "gate.deniedText":"Deine Anfrage wurde leider abgelehnt.", "gate.refresh":"Aktualisieren",
         "hero.eyebrow":"KOSTENLOSER MINECRAFT CLIENT",
         "hero.sub":"Swift Client ist ein schlanker Minecraft-Client mit <b>niedrigerer Inputverzögerung</b> und einem <b>aufgeräumten HUD</b> — ganz ohne Bloat.",
         "hero.cta":"Für Windows herunterladen",
@@ -946,6 +1071,9 @@
       en: {
         "nav.preise":"Pricing", "nav.bewertungen":"Reviews", "nav.community":"Community",
         "nav.anmelden":"Sign in", "nav.download":"Download", "nav.signout":"Sign out",
+        "gate.loggedOutText":"This site is currently only visible to approved users. Sign in to request access.",
+        "gate.pendingTitle":"Waiting for approval", "gate.pendingText":"Your request has been sent. You'll get access once it's approved.",
+        "gate.deniedTitle":"No access", "gate.deniedText":"Your request was unfortunately denied.", "gate.refresh":"Refresh",
         "hero.eyebrow":"FREE MINECRAFT CLIENT",
         "hero.sub":"Swift Client is a lightweight Minecraft client with <b>lower input delay</b> and a <b>clean HUD</b> — with zero bloat.",
         "hero.cta":"Download for Windows",
@@ -985,6 +1113,9 @@
       es: {
         "nav.preise":"Precios", "nav.bewertungen":"Opiniones", "nav.community":"Comunidad",
         "nav.anmelden":"Iniciar sesión", "nav.download":"Descargar", "nav.signout":"Cerrar sesión",
+        "gate.loggedOutText":"Esta página solo es visible actualmente para usuarios aprobados. Inicia sesión para solicitar acceso.",
+        "gate.pendingTitle":"Esperando aprobación", "gate.pendingText":"Tu solicitud fue enviada. Tendrás acceso en cuanto sea aprobada.",
+        "gate.deniedTitle":"Sin acceso", "gate.deniedText":"Tu solicitud fue rechazada.", "gate.refresh":"Actualizar",
         "hero.eyebrow":"CLIENTE GRATUITO DE MINECRAFT",
         "hero.sub":"Swift Client es un cliente de Minecraft ligero con <b>menor retardo de entrada</b> y un <b>HUD limpio</b> — sin nada de más.",
         "hero.cta":"Descargar para Windows",
@@ -1024,6 +1155,9 @@
       fr: {
         "nav.preise":"Tarifs", "nav.bewertungen":"Avis", "nav.community":"Communauté",
         "nav.anmelden":"Connexion", "nav.download":"Télécharger", "nav.signout":"Déconnexion",
+        "gate.loggedOutText":"Ce site n'est actuellement visible que pour les utilisateurs approuvés. Connectez-vous pour demander l'accès.",
+        "gate.pendingTitle":"En attente d'approbation", "gate.pendingText":"Votre demande a été envoyée. Vous aurez accès dès qu'elle sera approuvée.",
+        "gate.deniedTitle":"Aucun accès", "gate.deniedText":"Votre demande a été refusée.", "gate.refresh":"Actualiser",
         "hero.eyebrow":"CLIENT MINECRAFT GRATUIT",
         "hero.sub":"Swift Client est un client Minecraft léger avec un <b>délai d'entrée réduit</b> et un <b>HUD épuré</b> — sans superflu.",
         "hero.cta":"Télécharger pour Windows",
@@ -1063,6 +1197,9 @@
       it: {
         "nav.preise":"Prezzi", "nav.bewertungen":"Recensioni", "nav.community":"Community",
         "nav.anmelden":"Accedi", "nav.download":"Download", "nav.signout":"Esci",
+        "gate.loggedOutText":"Questo sito è attualmente visibile solo agli utenti approvati. Accedi per richiedere l'accesso.",
+        "gate.pendingTitle":"In attesa di approvazione", "gate.pendingText":"La tua richiesta è stata inviata. Avrai accesso non appena verrà approvata.",
+        "gate.deniedTitle":"Nessun accesso", "gate.deniedText":"La tua richiesta è stata rifiutata.", "gate.refresh":"Aggiorna",
         "hero.eyebrow":"CLIENT MINECRAFT GRATUITO",
         "hero.sub":"Swift Client è un client Minecraft leggero con <b>minor ritardo di input</b> e un <b>HUD pulito</b> — senza fronzoli.",
         "hero.cta":"Scarica per Windows",
@@ -1102,6 +1239,9 @@
       pt: {
         "nav.preise":"Preços", "nav.bewertungen":"Avaliações", "nav.community":"Comunidade",
         "nav.anmelden":"Entrar", "nav.download":"Download", "nav.signout":"Sair",
+        "gate.loggedOutText":"Este site está atualmente visível apenas para usuários aprovados. Entre para solicitar acesso.",
+        "gate.pendingTitle":"Aguardando aprovação", "gate.pendingText":"Seu pedido foi enviado. Você terá acesso assim que for aprovado.",
+        "gate.deniedTitle":"Sem acesso", "gate.deniedText":"Seu pedido foi negado.", "gate.refresh":"Atualizar",
         "hero.eyebrow":"CLIENTE MINECRAFT GRATUITO",
         "hero.sub":"Swift Client é um cliente de Minecraft leve com <b>menor atraso de entrada</b> e um <b>HUD limpo</b> — sem excessos.",
         "hero.cta":"Baixar para Windows",
@@ -1141,6 +1281,9 @@
       pl: {
         "nav.preise":"Cennik", "nav.bewertungen":"Opinie", "nav.community":"Społeczność",
         "nav.anmelden":"Zaloguj się", "nav.download":"Pobierz", "nav.signout":"Wyloguj się",
+        "gate.loggedOutText":"Ta strona jest obecnie widoczna tylko dla zatwierdzonych użytkowników. Zaloguj się, aby poprosić o dostęp.",
+        "gate.pendingTitle":"Oczekiwanie na zatwierdzenie", "gate.pendingText":"Twoja prośba została wysłana. Otrzymasz dostęp, gdy tylko zostanie zatwierdzona.",
+        "gate.deniedTitle":"Brak dostępu", "gate.deniedText":"Twoja prośba została odrzucona.", "gate.refresh":"Odśwież",
         "hero.eyebrow":"DARMOWY KLIENT MINECRAFT",
         "hero.sub":"Swift Client to lekki klient Minecraft z <b>mniejszym opóźnieniem wejścia</b> i <b>czystym HUD-em</b> — bez zbędnych dodatków.",
         "hero.cta":"Pobierz dla Windows",
@@ -1180,6 +1323,9 @@
       tr: {
         "nav.preise":"Fiyatlandırma", "nav.bewertungen":"Yorumlar", "nav.community":"Topluluk",
         "nav.anmelden":"Giriş yap", "nav.download":"İndir", "nav.signout":"Çıkış yap",
+        "gate.loggedOutText":"Bu site şu anda yalnızca onaylanmış kullanıcılar tarafından görülebilir. Erişim talep etmek için giriş yap.",
+        "gate.pendingTitle":"Onay bekleniyor", "gate.pendingText":"Talebin gönderildi. Onaylanır onaylanmaz erişim kazanacaksın.",
+        "gate.deniedTitle":"Erişim yok", "gate.deniedText":"Talebin maalesef reddedildi.", "gate.refresh":"Yenile",
         "hero.eyebrow":"ÜCRETSİZ MINECRAFT İSTEMCİSİ",
         "hero.sub":"Swift Client, <b>daha düşük giriş gecikmesi</b> ve <b>sade bir HUD</b> sunan hafif bir Minecraft istemcisidir — gereksiz hiçbir şey yok.",
         "hero.cta":"Windows için indir",
@@ -1219,6 +1365,9 @@
       ru: {
         "nav.preise":"Цены", "nav.bewertungen":"Отзывы", "nav.community":"Сообщество",
         "nav.anmelden":"Войти", "nav.download":"Скачать", "nav.signout":"Выйти",
+        "gate.loggedOutText":"Этот сайт сейчас виден только одобренным пользователям. Войди, чтобы запросить доступ.",
+        "gate.pendingTitle":"Ожидание одобрения", "gate.pendingText":"Твой запрос отправлен. Ты получишь доступ, как только его одобрят.",
+        "gate.deniedTitle":"Нет доступа", "gate.deniedText":"Твой запрос был отклонён.", "gate.refresh":"Обновить",
         "hero.eyebrow":"БЕСПЛАТНЫЙ КЛИЕНТ MINECRAFT",
         "hero.sub":"Swift Client — лёгкий клиент Minecraft с <b>минимальной задержкой ввода</b> и <b>чистым HUD</b> — никакого лишнего балласта.",
         "hero.cta":"Скачать для Windows",
@@ -1341,6 +1490,19 @@
     var signinTitle = document.getElementById('signinTitle');
     if(!overlay) return;
 
+    var ADMIN_EMAIL = 'l.kunzmann@mail.de';
+    var siteContent = document.getElementById('siteContent');
+    var gateLoading = document.getElementById('gateLoading');
+    var gateLoggedOut = document.getElementById('gateLoggedOut');
+    var gatePending = document.getElementById('gatePending');
+    var gateDenied = document.getElementById('gateDenied');
+    var adminPanel = document.getElementById('adminPanel');
+    var adminPanelList = document.getElementById('adminPanelList');
+    var adminPanelRefresh = document.getElementById('adminPanelRefresh');
+    var gateSignOutPending = document.getElementById('gateSignOutPending');
+    var gateSignOutDenied = document.getElementById('gateSignOutDenied');
+    var gateRefreshPending = document.getElementById('gateRefreshPending');
+
     var currentSession = null;
 
     function currentLang(){ return document.documentElement.lang || 'de'; }
@@ -1385,6 +1547,120 @@
         navUserEmail.textContent = '';
       }
     }
+
+    function showGate(which){
+      [gateLoading, gateLoggedOut, gatePending, gateDenied].forEach(function(el){ el.hidden = true; });
+      siteContent.hidden = true;
+      adminPanel.hidden = true;
+      if(which === 'content'){
+        siteContent.hidden = false;
+      } else if(which === 'loading'){
+        gateLoading.hidden = false;
+      } else if(which === 'loggedOut'){
+        gateLoggedOut.hidden = false;
+      } else if(which === 'pending'){
+        gatePending.hidden = false;
+      } else if(which === 'denied'){
+        gateDenied.hidden = false;
+      }
+    }
+
+    function renderAdminRequest(req){
+      var div = document.createElement('div');
+      div.className = 'admin-request';
+
+      var labelEl = document.createElement('div');
+      labelEl.textContent = (req.display_name ? req.display_name + ' (' + req.email + ')' : req.email) + ' — ' + (req.provider || '');
+      div.appendChild(labelEl);
+
+      var statusEl = document.createElement('div');
+      statusEl.className = 'admin-request-status';
+      statusEl.textContent = 'Status: ' + req.status;
+      div.appendChild(statusEl);
+
+      var actions = document.createElement('div');
+      actions.className = 'admin-request-actions';
+      [['approved','Annehmen','admin-approve'], ['denied','Ablehnen','admin-deny']].forEach(function(a){
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = a[2];
+        btn.textContent = a[1];
+        btn.addEventListener('click', function(){
+          sb.from('access_requests').update({status: a[0], updated_at: new Date().toISOString()}).eq('id', req.id).then(function(){
+            loadAdminRequests();
+          });
+        });
+        actions.appendChild(btn);
+      });
+      div.appendChild(actions);
+      return div;
+    }
+
+    function loadAdminRequests(){
+      sb.from('access_requests').select('*').order('created_at', {ascending:false}).then(function(res){
+        adminPanelList.innerHTML = '';
+        var rows = res.data || [];
+        if(!rows.length){
+          var empty = document.createElement('p');
+          empty.className = 'admin-empty';
+          empty.textContent = 'Keine Anfragen.';
+          adminPanelList.appendChild(empty);
+          return;
+        }
+        rows.forEach(function(req){
+          adminPanelList.appendChild(renderAdminRequest(req));
+        });
+      });
+    }
+
+    function checkAccess(session){
+      if(!session || !session.user){
+        showGate('loggedOut');
+        return;
+      }
+      var email = (session.user.email || '').toLowerCase();
+      var isAdmin = email === ADMIN_EMAIL;
+      var meta = session.user.user_metadata || {};
+      var displayName = meta.user_name || meta.preferred_username || meta.full_name || meta.name || '';
+      var provider = (session.user.app_metadata && session.user.app_metadata.provider) || '';
+
+      sb.from('access_requests').select('status').eq('user_id', session.user.id).maybeSingle().then(function(res){
+        var existing = res.data;
+        if(!existing){
+          var newStatus = isAdmin ? 'approved' : 'pending';
+          sb.from('access_requests').insert({
+            user_id: session.user.id,
+            email: email,
+            display_name: displayName,
+            provider: provider,
+            status: newStatus
+          }).then(function(){
+            applyAccessState(newStatus, isAdmin);
+          });
+        } else {
+          applyAccessState(existing.status, isAdmin);
+        }
+      });
+    }
+
+    function applyAccessState(status, isAdmin){
+      if(isAdmin || status === 'approved'){
+        showGate('content');
+        if(isAdmin){
+          adminPanel.hidden = false;
+          loadAdminRequests();
+        }
+      } else if(status === 'denied'){
+        showGate('denied');
+      } else {
+        showGate('pending');
+      }
+    }
+
+    gateSignOutPending.addEventListener('click', function(){ sb.auth.signOut(); });
+    gateSignOutDenied.addEventListener('click', function(){ sb.auth.signOut(); });
+    gateRefreshPending.addEventListener('click', function(){ checkAccess(currentSession); });
+    adminPanelRefresh.addEventListener('click', loadAdminRequests);
 
     document.querySelectorAll('.js-signin').forEach(function(el){
       el.addEventListener('click', function(e){
@@ -1433,8 +1709,8 @@
       if(e.key === 'Escape') closeSignin();
     });
 
-    sb.auth.onAuthStateChange(function(_event, session){ renderSession(session); });
-    sb.auth.getSession().then(function(res){ renderSession(res.data.session); });
+    sb.auth.onAuthStateChange(function(_event, session){ renderSession(session); checkAccess(session); });
+    sb.auth.getSession().then(function(res){ renderSession(res.data.session); checkAccess(res.data.session); });
   })();
 </script>
 </body>
