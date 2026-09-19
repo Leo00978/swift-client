@@ -115,7 +115,6 @@
     <p>Melde dich als Admin an, um Zugriffsanfragen zu verwalten.</p>
     <div class="btn-row">
       <button class="btn" id="loginDiscord">Mit Discord anmelden</button>
-      <button class="btn" id="loginGoogle">Mit Google anmelden</button>
     </div>
   </div>
 
@@ -283,9 +282,6 @@
 
   document.getElementById('loginDiscord').addEventListener('click', function(){
     sb.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: redirectUrl } });
-  });
-  document.getElementById('loginGoogle').addEventListener('click', function(){
-    sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectUrl } });
   });
   document.getElementById('noAccessSignOut').addEventListener('click', function(){ sb.auth.signOut(); });
   document.getElementById('signOutBtn').addEventListener('click', function(){ sb.auth.signOut(); });
