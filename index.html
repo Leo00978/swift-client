@@ -653,64 +653,22 @@
   .gate-text{color:var(--text-dim);max-width:42ch;font-size:15px;}
   .gate-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
 
-  /* Admin panel */
-  .admin-panel{
-    position:fixed;
-    top:88px;
-    right:20px;
-    width:320px;
-    max-height:70vh;
-    overflow-y:auto;
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:14px;
-    box-shadow:0 20px 50px rgba(0,0,0,0.5);
-    z-index:150;
-    padding:14px;
+  /* Admin toast */
+  .admin-toast{
+    position:fixed; top:88px; right:20px; max-width:320px; z-index:150;
+    display:flex; align-items:center; gap:12px;
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5); padding:12px 14px;
+    font-size:13px; color:var(--text);
+    opacity:0; transform:translateY(-8px); pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
   }
-  .admin-panel-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    font-size:13px;
-    margin-bottom:10px;
-    color:var(--text);
+  .admin-toast.show{opacity:1; transform:none; pointer-events:auto;}
+  .admin-toast a{color:var(--accent); font-weight:700; text-decoration:underline; white-space:nowrap;}
+  .admin-toast-close{
+    background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:16px; line-height:1; padding:0 2px;
   }
-  .admin-panel-refresh{
-    background:none;
-    border:1px solid var(--border);
-    color:var(--text-dim);
-    border-radius:6px;
-    width:24px;
-    height:24px;
-    cursor:pointer;
-  }
-  .admin-request{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    padding:10px;
-    border:1px solid var(--border-soft);
-    border-radius:10px;
-    margin-bottom:8px;
-    font-size:12.5px;
-    color:var(--text-dim);
-  }
-  .admin-request-status{font-size:11px;color:var(--text-faint);}
-  .admin-request-actions{display:flex;gap:8px;}
-  .admin-request-actions button{
-    flex:1;
-    padding:6px 10px;
-    font-size:11.5px;
-    border-radius:8px;
-    border:1px solid var(--border);
-    cursor:pointer;
-    font-family:inherit;
-    font-weight:700;
-  }
-  .admin-approve{background:rgba(143,214,168,0.12);color:#8fd6a8;}
-  .admin-deny{background:rgba(224,149,143,0.12);color:#e0958f;}
-  .admin-empty{color:var(--text-faint);font-size:12.5px;}
+  .admin-toast-close:hover{color:var(--text);}
 </style>
 </head>
 <body>
@@ -742,12 +700,10 @@
     <button type="button" class="btn btn-ghost" id="gateSignOutDenied" data-i18n="nav.signout">Abmelden</button>
   </div>
 
-  <div id="adminPanel" class="admin-panel" hidden>
-    <div class="admin-panel-header">
-      <strong>Zugriffsanfragen</strong>
-      <button type="button" id="adminPanelRefresh" class="admin-panel-refresh" aria-label="Aktualisieren">↻</button>
-    </div>
-    <div id="adminPanelList"></div>
+  <div id="adminToast" class="admin-toast" role="status" aria-live="polite">
+    <span id="adminToastText"></span>
+    <a href="admin.html">Ansehen</a>
+    <button type="button" class="admin-toast-close" id="adminToastClose" aria-label="Schließen">&times;</button>
   </div>
 
   <div id="siteContent" hidden>
@@ -1491,9 +1447,9 @@
     var gateLoggedOut = document.getElementById('gateLoggedOut');
     var gatePending = document.getElementById('gatePending');
     var gateDenied = document.getElementById('gateDenied');
-    var adminPanel = document.getElementById('adminPanel');
-    var adminPanelList = document.getElementById('adminPanelList');
-    var adminPanelRefresh = document.getElementById('adminPanelRefresh');
+    var adminToast = document.getElementById('adminToast');
+    var adminToastText = document.getElementById('adminToastText');
+    var adminToastTimer = null;
     var gateSignOutPending = document.getElementById('gateSignOutPending');
     var gateSignOutDenied = document.getElementById('gateSignOutDenied');
     var gateRefreshPending = document.getElementById('gateRefreshPending');
@@ -1546,7 +1502,7 @@
     function showGate(which){
       [gateLoading, gateLoggedOut, gatePending, gateDenied].forEach(function(el){ el.hidden = true; });
       siteContent.hidden = true;
-      adminPanel.hidden = true;
+      hideAdminToast();
       if(which === 'content'){
         siteContent.hidden = false;
       } else if(which === 'loading'){
@@ -1560,51 +1516,21 @@
       }
     }
 
-    function renderAdminRequest(req){
-      var div = document.createElement('div');
-      div.className = 'admin-request';
-
-      var labelEl = document.createElement('div');
-      labelEl.textContent = (req.display_name ? req.display_name + ' (' + req.email + ')' : req.email) + ' — ' + (req.provider || '');
-      div.appendChild(labelEl);
-
-      var statusEl = document.createElement('div');
-      statusEl.className = 'admin-request-status';
-      statusEl.textContent = 'Status: ' + req.status;
-      div.appendChild(statusEl);
-
-      var actions = document.createElement('div');
-      actions.className = 'admin-request-actions';
-      [['approved','Annehmen','admin-approve'], ['denied','Ablehnen','admin-deny']].forEach(function(a){
-        var btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = a[2];
-        btn.textContent = a[1];
-        btn.addEventListener('click', function(){
-          sb.from('access_requests').update({status: a[0], updated_at: new Date().toISOString()}).eq('id', req.id).then(function(){
-            loadAdminRequests();
-          });
-        });
-        actions.appendChild(btn);
-      });
-      div.appendChild(actions);
-      return div;
+    function hideAdminToast(){
+      adminToast.classList.remove('show');
+      clearTimeout(adminToastTimer);
     }
 
-    function loadAdminRequests(){
-      sb.from('access_requests').select('*').order('created_at', {ascending:false}).then(function(res){
-        adminPanelList.innerHTML = '';
-        var rows = res.data || [];
-        if(!rows.length){
-          var empty = document.createElement('p');
-          empty.className = 'admin-empty';
-          empty.textContent = 'Keine Anfragen.';
-          adminPanelList.appendChild(empty);
-          return;
-        }
-        rows.forEach(function(req){
-          adminPanelList.appendChild(renderAdminRequest(req));
-        });
+    function showAdminToast(count){
+      adminToastText.textContent = count === 1 ? '1 neue Zugriffsanfrage' : count + ' neue Zugriffsanfragen';
+      adminToast.classList.add('show');
+      clearTimeout(adminToastTimer);
+      adminToastTimer = setTimeout(hideAdminToast, 10000);
+    }
+
+    function notifyPendingRequests(){
+      sb.from('access_requests').select('id', {count:'exact', head:true}).eq('status','pending').then(function(res){
+        if(res.count > 0) showAdminToast(res.count);
       });
     }
 
@@ -1642,8 +1568,7 @@
       if(isAdmin || status === 'approved'){
         showGate('content');
         if(isAdmin){
-          adminPanel.hidden = false;
-          loadAdminRequests();
+          notifyPendingRequests();
         }
       } else if(status === 'denied'){
         showGate('denied');
@@ -1655,7 +1580,7 @@
     gateSignOutPending.addEventListener('click', function(){ sb.auth.signOut(); });
     gateSignOutDenied.addEventListener('click', function(){ sb.auth.signOut(); });
     gateRefreshPending.addEventListener('click', function(){ checkAccess(currentSession); });
-    adminPanelRefresh.addEventListener('click', loadAdminRequests);
+    document.getElementById('adminToastClose').addEventListener('click', hideAdminToast);
 
     document.querySelectorAll('.js-signin').forEach(function(el){
       el.addEventListener('click', function(e){
