@@ -249,21 +249,27 @@
     font-weight:700;
     color:var(--text);
   }
-  .modal-dl{max-width:400px;}
-  .dl-card{
-    display:flex; align-items:center; gap:14px; text-align:left;
-    margin-top:22px; padding:14px 16px; border-radius:12px;
-    background:var(--surface-2); border:1px solid var(--border);
+  .modal-dl{max-width:520px; padding:34px 28px 28px;}
+  .dl-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:26px;}
+  .dl-tile{
+    position:relative; display:flex; flex-direction:column; align-items:center; gap:6px;
+    padding:30px 14px 20px; border-radius:16px; text-decoration:none; text-align:center;
+    background:var(--surface-2); border:1.5px solid var(--tile,#4db8ff);
+    box-shadow:0 0 22px -6px var(--tile,#4db8ff), inset 0 0 24px -16px var(--tile,#4db8ff);
+    color:var(--text); transition:transform .15s ease, box-shadow .15s ease;
   }
-  .dl-card-info{flex:1; min-width:0;}
-  .dl-card-title{font-weight:700; font-size:15px; color:var(--text);}
-  .dl-card-desc{font-size:12.5px; color:var(--text-dim); margin-top:2px;}
-  .dl-card.soon{opacity:0.55;}
-  .dl-card.soon .dl-card-action{
-    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;
-    color:var(--text-faint); border:1px solid var(--border); border-radius:999px; padding:4px 10px; white-space:nowrap;
+  a.dl-tile:hover{transform:translateY(-2px); box-shadow:0 0 30px -4px var(--tile,#4db8ff), inset 0 0 24px -14px var(--tile,#4db8ff);}
+  .dl-tile-badge{
+    position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+    background:var(--tile,#4db8ff); color:#07131c; white-space:nowrap;
+    font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.07em;
+    padding:3px 12px; border-radius:999px;
   }
-  .modal-dl .dl-main{width:100%; justify-content:center; margin-top:14px;}
+  .dl-tile-icon{width:44px; height:44px; color:var(--text); margin-bottom:4px;}
+  .dl-tile-title{font-weight:700; font-size:16px;}
+  .dl-tile-desc{font-size:12px; color:var(--text-dim); line-height:1.5;}
+  .dl-tile.soon{--tile:#9b7bff; opacity:0.6; cursor:default;}
+  @media (max-width:480px){ .dl-grid{grid-template-columns:1fr;} }
   #signinAlready .modal-sub{margin-top:0;}
   #signinAlready #signinModalSignOut{margin-top:22px;}
 
@@ -991,23 +997,20 @@
   <div class="modal-overlay" id="downloadOverlay">
     <div class="modal modal-dl" role="dialog" aria-modal="true" aria-labelledby="downloadTitle">
       <button type="button" class="modal-close" id="downloadClose" aria-label="Schließen">✕</button>
-      <h3 id="downloadTitle" data-i18n="dl.title">Swift herunterladen</h3>
-      <p class="modal-sub" data-i18n="dl.sub">Wähle, was du herunterladen möchtest.</p>
-      <div class="dl-card">
-        <div class="dl-card-info">
-          <div class="dl-card-title" data-i18n="dl.modpack">Swift Modpack</div>
-          <div class="dl-card-desc" data-i18n="dl.modpackDesc">Unser Modpack auf Modrinth</div>
+      <h3 id="downloadTitle" data-i18n="dl.title">Wähle, wie du spielen möchtest</h3>
+      <div class="dl-grid">
+        <a href="https://modrinth.com/modpack/swift-client-modpack" target="_blank" rel="noopener noreferrer" class="dl-tile" id="downloadModpackBtn">
+          <span class="dl-tile-badge" data-i18n="dl.free">Kostenlos</span>
+          <svg class="dl-tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg>
+          <span class="dl-tile-title">Modpack</span>
+          <span class="dl-tile-desc">Modrinth<br>Windows, macOS, Linux</span>
+        </a>
+        <div class="dl-tile soon" aria-disabled="true">
+          <span class="dl-tile-badge" data-i18n="dl.soon">Bald verfügbar</span>
+          <svg class="dl-tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+          <span class="dl-tile-title">Client</span>
+          <span class="dl-tile-desc" data-i18n="dl.clientDesc">Der eigenständige Client</span>
         </div>
-      </div>
-      <a href="https://modrinth.com/modpack/swift-client-modpack" target="_blank" rel="noopener noreferrer" class="btn btn-primary dl-main" id="downloadModpackBtn">
-        <span data-i18n="dl.modpackBtn">Auf Modrinth herunterladen</span>
-      </a>
-      <div class="dl-card soon">
-        <div class="dl-card-info">
-          <div class="dl-card-title" data-i18n="dl.client">Swift Client</div>
-          <div class="dl-card-desc" data-i18n="dl.clientDesc">Der eigenständige Client</div>
-        </div>
-        <span class="dl-card-action" data-i18n="dl.soon">Bald verfügbar</span>
       </div>
     </div>
   </div>
@@ -1019,7 +1022,7 @@
       de: {
         "nav.preise":"Preise", "nav.bewertungen":"Bewertungen", "nav.community":"Community",
         "nav.anmelden":"Anmelden", "nav.download":"Download", "nav.signout":"Abmelden",
-        "dl.title":"Swift herunterladen", "dl.sub":"Wähle, was du herunterladen möchtest.", "dl.modpack":"Swift Modpack", "dl.modpackDesc":"Unser Modpack auf Modrinth", "dl.modpackBtn":"Auf Modrinth herunterladen", "dl.client":"Swift Client", "dl.clientDesc":"Der eigenständige Client", "dl.soon":"Bald verfügbar",
+        "dl.title":"Wähle, wie du spielen möchtest", "dl.free":"Kostenlos", "dl.clientDesc":"Der eigenständige Client", "dl.soon":"Bald verfügbar",
         "gate.loggedOutText":"Diese Seite ist aktuell nur für freigegebene Nutzer sichtbar. Melde dich an, um Zugriff zu beantragen.",
         "gate.pendingTitle":"Warte auf Freigabe", "gate.pendingText":"Deine Anfrage wurde gesendet. Du bekommst Zugriff, sobald sie bestätigt wurde.",
         "gate.deniedTitle":"Kein Zugriff", "gate.deniedText":"Deine Anfrage wurde leider abgelehnt.", "gate.refresh":"Aktualisieren",
@@ -1062,7 +1065,7 @@
       en: {
         "nav.preise":"Pricing", "nav.bewertungen":"Reviews", "nav.community":"Community",
         "nav.anmelden":"Sign in", "nav.download":"Download", "nav.signout":"Sign out",
-        "dl.title":"Download Swift", "dl.sub":"Choose what you want to download.", "dl.modpack":"Swift Modpack", "dl.modpackDesc":"Our modpack on Modrinth", "dl.modpackBtn":"Download on Modrinth", "dl.client":"Swift Client", "dl.clientDesc":"The standalone client", "dl.soon":"Coming soon",
+        "dl.title":"Choose how you want to play", "dl.free":"Free", "dl.clientDesc":"The standalone client", "dl.soon":"Coming soon",
         "gate.loggedOutText":"This site is currently only visible to approved users. Sign in to request access.",
         "gate.pendingTitle":"Waiting for approval", "gate.pendingText":"Your request has been sent. You'll get access once it's approved.",
         "gate.deniedTitle":"No access", "gate.deniedText":"Your request was unfortunately denied.", "gate.refresh":"Refresh",
@@ -1105,7 +1108,7 @@
       es: {
         "nav.preise":"Precios", "nav.bewertungen":"Opiniones", "nav.community":"Comunidad",
         "nav.anmelden":"Iniciar sesión", "nav.download":"Descargar", "nav.signout":"Cerrar sesión",
-        "dl.title":"Descargar Swift", "dl.sub":"Elige qué quieres descargar.", "dl.modpack":"Swift Modpack", "dl.modpackDesc":"Nuestro modpack en Modrinth", "dl.modpackBtn":"Descargar en Modrinth", "dl.client":"Swift Client", "dl.clientDesc":"El cliente independiente", "dl.soon":"Próximamente",
+        "dl.title":"Elige cómo quieres jugar", "dl.free":"Gratis", "dl.clientDesc":"El cliente independiente", "dl.soon":"Próximamente",
         "gate.loggedOutText":"Esta página solo es visible actualmente para usuarios aprobados. Inicia sesión para solicitar acceso.",
         "gate.pendingTitle":"Esperando aprobación", "gate.pendingText":"Tu solicitud fue enviada. Tendrás acceso en cuanto sea aprobada.",
         "gate.deniedTitle":"Sin acceso", "gate.deniedText":"Tu solicitud fue rechazada.", "gate.refresh":"Actualizar",
@@ -1148,7 +1151,7 @@
       fr: {
         "nav.preise":"Tarifs", "nav.bewertungen":"Avis", "nav.community":"Communauté",
         "nav.anmelden":"Connexion", "nav.download":"Télécharger", "nav.signout":"Déconnexion",
-        "dl.title":"Télécharger Swift", "dl.sub":"Choisis ce que tu veux télécharger.", "dl.modpack":"Swift Modpack", "dl.modpackDesc":"Notre modpack sur Modrinth", "dl.modpackBtn":"Télécharger sur Modrinth", "dl.client":"Swift Client", "dl.clientDesc":"Le client autonome", "dl.soon":"Bientôt disponible",
+        "dl.title":"Choisis comment tu veux jouer", "dl.free":"Gratuit", "dl.clientDesc":"Le client autonome", "dl.soon":"Bientôt disponible",
         "gate.loggedOutText":"Ce site n'est actuellement visible que pour les utilisateurs approuvés. Connectez-vous pour demander l'accès.",
         "gate.pendingTitle":"En attente d'approbation", "gate.pendingText":"Votre demande a été envoyée. Vous aurez accès dès qu'elle sera approuvée.",
         "gate.deniedTitle":"Aucun accès", "gate.deniedText":"Votre demande a été refusée.", "gate.refresh":"Actualiser",
@@ -1191,7 +1194,7 @@
       it: {
         "nav.preise":"Prezzi", "nav.bewertungen":"Recensioni", "nav.community":"Community",
         "nav.anmelden":"Accedi", "nav.download":"Download", "nav.signout":"Esci",
-        "dl.title":"Scarica Swift", "dl.sub":"Scegli cosa vuoi scaricare.", "dl.modpack":"Swift Modpack", "dl.modpackDesc":"Il nostro modpack su Modrinth", "dl.modpackBtn":"Scarica su Modrinth", "dl.client":"Swift Client", "dl.clientDesc":"Il client standalone", "dl.soon":"In arrivo",
+        "dl.title":"Scegli come vuoi giocare", "dl.free":"Gratis", "dl.clientDesc":"Il client standalone", "dl.soon":"In arrivo",
         "gate.loggedOutText":"Questo sito è attualmente visibile solo agli utenti approvati. Accedi per richiedere l'accesso.",
         "gate.pendingTitle":"In attesa di approvazione", "gate.pendingText":"La tua richiesta è stata inviata. Avrai accesso non appena verrà approvata.",
         "gate.deniedTitle":"Nessun accesso", "gate.deniedText":"La tua richiesta è stata rifiutata.", "gate.refresh":"Aggiorna",
@@ -1234,7 +1237,7 @@
       pt: {
         "nav.preise":"Preços", "nav.bewertungen":"Avaliações", "nav.community":"Comunidade",
         "nav.anmelden":"Entrar", "nav.download":"Download", "nav.signout":"Sair",
-        "dl.title":"Baixar Swift", "dl.sub":"Escolhe o que queres baixar.", "dl.modpack":"Swift Modpack", "dl.modpackDesc":"O nosso modpack no Modrinth", "dl.modpackBtn":"Baixar no Modrinth", "dl.client":"Swift Client", "dl.clientDesc":"O cliente independente", "dl.soon":"Em breve",
+        "dl.title":"Escolhe como queres jogar", "dl.free":"Grátis", "dl.clientDesc":"O cliente independente", "dl.soon":"Em breve",
         "gate.loggedOutText":"Este site está atualmente visível apenas para usuários aprovados. Entre para solicitar acesso.",
         "gate.pendingTitle":"Aguardando aprovação", "gate.pendingText":"Seu pedido foi enviado. Você terá acesso assim que for aprovado.",
         "gate.deniedTitle":"Sem acesso", "gate.deniedText":"Seu pedido foi negado.", "gate.refresh":"Atualizar",
@@ -1277,7 +1280,7 @@
       pl: {
         "nav.preise":"Cennik", "nav.bewertungen":"Opinie", "nav.community":"Społeczność",
         "nav.anmelden":"Zaloguj się", "nav.download":"Pobierz", "nav.signout":"Wyloguj się",
-        "dl.title":"Pobierz Swift", "dl.sub":"Wybierz, co chcesz pobrać.", "dl.modpack":"Swift Modpack", "dl.modpackDesc":"Nasz modpack na Modrinth", "dl.modpackBtn":"Pobierz na Modrinth", "dl.client":"Swift Client", "dl.clientDesc":"Samodzielny klient", "dl.soon":"Wkrótce",
+        "dl.title":"Wybierz, jak chcesz grać", "dl.free":"Za darmo", "dl.clientDesc":"Samodzielny klient", "dl.soon":"Wkrótce",
         "gate.loggedOutText":"Ta strona jest obecnie widoczna tylko dla zatwierdzonych użytkowników. Zaloguj się, aby poprosić o dostęp.",
         "gate.pendingTitle":"Oczekiwanie na zatwierdzenie", "gate.pendingText":"Twoja prośba została wysłana. Otrzymasz dostęp, gdy tylko zostanie zatwierdzona.",
         "gate.deniedTitle":"Brak dostępu", "gate.deniedText":"Twoja prośba została odrzucona.", "gate.refresh":"Odśwież",
@@ -1320,7 +1323,7 @@
       tr: {
         "nav.preise":"Fiyatlandırma", "nav.bewertungen":"Yorumlar", "nav.community":"Topluluk",
         "nav.anmelden":"Giriş yap", "nav.download":"İndir", "nav.signout":"Çıkış yap",
-        "dl.title":"Swift'i indir", "dl.sub":"Ne indirmek istediğini seç.", "dl.modpack":"Swift Modpack", "dl.modpackDesc":"Modrinth'teki modpack'imiz", "dl.modpackBtn":"Modrinth'ten indir", "dl.client":"Swift Client", "dl.clientDesc":"Bağımsız istemci", "dl.soon":"Çok yakında",
+        "dl.title":"Nasıl oynamak istediğini seç", "dl.free":"Ücretsiz", "dl.clientDesc":"Bağımsız istemci", "dl.soon":"Çok yakında",
         "gate.loggedOutText":"Bu site şu anda yalnızca onaylanmış kullanıcılar tarafından görülebilir. Erişim talep etmek için giriş yap.",
         "gate.pendingTitle":"Onay bekleniyor", "gate.pendingText":"Talebin gönderildi. Onaylanır onaylanmaz erişim kazanacaksın.",
         "gate.deniedTitle":"Erişim yok", "gate.deniedText":"Talebin maalesef reddedildi.", "gate.refresh":"Yenile",
@@ -1363,7 +1366,7 @@
       ru: {
         "nav.preise":"Цены", "nav.bewertungen":"Отзывы", "nav.community":"Сообщество",
         "nav.anmelden":"Войти", "nav.download":"Скачать", "nav.signout":"Выйти",
-        "dl.title":"Скачать Swift", "dl.sub":"Выбери, что хочешь скачать.", "dl.modpack":"Swift Modpack", "dl.modpackDesc":"Наш модпак на Modrinth", "dl.modpackBtn":"Скачать на Modrinth", "dl.client":"Swift Client", "dl.clientDesc":"Отдельный клиент", "dl.soon":"Скоро",
+        "dl.title":"Выбери, как хочешь играть", "dl.free":"Бесплатно", "dl.clientDesc":"Отдельный клиент", "dl.soon":"Скоро",
         "gate.loggedOutText":"Этот сайт сейчас виден только одобренным пользователям. Войди, чтобы запросить доступ.",
         "gate.pendingTitle":"Ожидание одобрения", "gate.pendingText":"Твой запрос отправлен. Ты получишь доступ, как только его одобрят.",
         "gate.deniedTitle":"Нет доступа", "gate.deniedText":"Твой запрос был отклонён.", "gate.refresh":"Обновить",
